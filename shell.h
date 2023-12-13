@@ -7,5 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
+int _prompt(void);
 
 #endif
