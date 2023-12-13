@@ -19,13 +19,13 @@ char **tokenize(char *input_strings, char *delims)
 
 	while (tokens != NULL)
 	{
-		av = _realloc(av, sizeof(*av) * num_delims, sizeof(*av) * (num_delims + 1));
+		av = _reallocs(av, sizeof(*av) * num_delims, sizeof(*av) * (num_delims + 1));
 		av[num_delims] = tokens;
 		tokens = _strtok_s(NULL, delims, &save_ptrs);
 		num_delims++;
 	}
 
-	av = _realloc(av, sizeof(*av) * num_delims, sizeof(*av) * (num_delims + 1));
+	av = _reallocs(av, sizeof(*av) * num_delims, sizeof(*av) * (num_delims + 1));
 	av[num_delims] = NULL;
 
 	return (av);

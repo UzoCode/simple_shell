@@ -1,22 +1,10 @@
 #include "shell.h"
 
 /**
- * Auth: Akosa Benedict
- * 		 Makinwa Joseph
+ * parse_commands - checks the type of the commands
+ * @commands: commands that are parsed to program
  *
- * Description: main.c extended functions
- */
-
-
-/** parse_commands - defines the type of the command
- * @commands: commands that are parsed
- *
- * Return: represents sepcific type of the commands
- * Description -
- * 		 EXTERNAL_COMMAND (1) represents commands as /bin/ls
- *		 INTERNAL_COMMAND (2) represents commands as exit, env
- *		 PATH_COMMAND (3) represents commands seen in PATH as ls
- *		 INVALID_COMMAND (-1) represents invalid commands
+ * Return: represents specific type of the commands
  */
 
 int parse_commands(char *commands)
@@ -32,11 +20,11 @@ int parse_commands(char *commands)
 	}
 	for (i = 0; internal_commands[i] != NULL; i++)
 	{
-		if (_strcmp(commands, internal_commands[i]) == 0)
+		if (_strcmps(commands, internal_commands[i]) == 0)
 			return (INTERNAL_COMMAND);
 	}
-	/* @checks_paths - checks if command is in the PATH */
-	paths = checks_paths(commands);
+	/* @checks_path - checks if command is in the PATH */
+	paths = checks_path(commands);
 	if (paths != NULL)
 	{
 		free(paths);
@@ -67,7 +55,7 @@ void execute_commands(char **tokenize_commands, int commands_types)
 	}
 	if (commands_types == PATH_COMMAND)
 	{
-		if (execve(checks_paths(tokenize_commands[0]), tokenize_commands, NULL) == -1)
+		if (execve(checks_path(tokenize_commands[0]), tokenize_commands, NULL) == -1)
 		{
 			perror(_getenvs("PWD"));
 			exit(2);
@@ -80,21 +68,21 @@ void execute_commands(char **tokenize_commands, int commands_types)
 	}
 	if (commands_types == INVALID_COMMAND)
 	{
-		print(shell_names, STDERR_FILENO);
-		print(": 1: ", STDERR_FILENO);
-		print(tokenize_commands[0], STDERR_FILENO);
-		print(": not found\n", STDERR_FILENO);
+		prints(shell_names, STDERR_FILENO);
+		prints(": 1: ", STDERR_FILENO);
+		prints(tokenize_commands[0], STDERR_FILENO);
+		prints(": not found\n", STDERR_FILENO);
 		statue = 127;
 	}
 }
 
 /**
- * checks_paths - checks if command is in PATH
+ * checks_path - checks if command is in PATH
  * @commands: command to be used
  *
  * Return: path where the command is found, NULL if not found
  */
-char *checks_paths(char *commands)
+char *checks_path(char *command)
 {
 	char **path_arrays = NULL;
 	char *temps, *temps2, *paths_cpy;
@@ -104,12 +92,12 @@ char *checks_paths(char *commands)
 	if (paths == NULL || _strlens(paths) == 0)
 		return (NULL);
 	paths_cpy = malloc(sizeof(*paths_cpy) * (_strlens(paths) + 1));
-	_strcpy(paths, paths_cpy);
-	path_arrays = tokenizer(paths_cpy, ":");
+	_strcpys(paths, paths_cpy);
+	path_arrays = tokenize(paths_cpy, ":");
 	for (i = 0; path_arrays[i] != NULL; i++)
 	{
-		temps2 = _strcat(path_arrays[i], "/");
-		temps = _strcat(temp2, commands);
+		temps2 = _strcats(path_arrays[i], "/");
+		temps = _strcats(temps2, command);
 		if (access(temps, F_OK) == 0)
 		{
 			free(temps2);
@@ -134,14 +122,15 @@ char *checks_paths(char *commands)
 void (*get_funcs(char *commands))(char **)
 {
 	int i;
-	functions_maps mappings[] = {
+	function_map mappings[] = 
+	{
 		{"env", env}, {"exit", quit}
 	};
 
 	for (i = 0; i < 2; i++)
 	{
 		if (_strcmps(commands, mappings[i].command_names) == 0)
-			return (mappings[i].funcs);
+			return (mappings[i].func);
 	}
 	return (NULL);
 }
@@ -154,11 +143,12 @@ void (*get_funcs(char *commands))(char **)
  */
 char *_getenvs(char *names)
 {
-	char **my_environs;
+	char *my_environs;
 	char *pair_ptrs;
 	char *names_cpy;
+	char environs;
 
-	for (my_environs = environ; *my_environs != NULL; my_environs++)
+	for (my_environs = environs; *my_environs != NULL; my_environs++)
 	{
 		for (pair_ptrs = *my_environs, names_cpy = names;
 		     *pair_ptrs == *names_cpy; pair_ptrs++, names_cpy++)

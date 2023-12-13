@@ -1,20 +1,20 @@
 #include "shell.h"
 
 /**
- *envs - to print the current_environnement
+ *env - to print the current_environnement
  *@tokenize_commands: command entered
  *
  *Return: void
  */
 
-void envs(char **tokenize_commands __attribute__((unused)))
+void env(char **tokenize_commands __attribute__((unused)))
 {
 	int i;
 
 	for (i = 0; environs[i] != NULL; i++)
 	{
-		print(environs[i], STDOUT_FILENO);
-		print("\n", STDOUT_FILENO);
+		prints(environs[i], STDOUT_FILENO);
+		prints("\n", STDOUT_FILENO);
 	}
 }
 
@@ -43,10 +43,10 @@ void quit(char **tokenize_commands)
 		args = _atoi_i(tokenize_commands[1]);
 		if (args == -1)
 		{
-			print(shell_names, STDERR_FILENO);
-			print(": 1: exit: Invalid number: ", STDERR_FILENO);
-			print(tokenize_commands[1], STDERR_FILENO);
-			print("\n", STDERR_FILENO);
+			prints(shell_names, STDERR_FILENO);
+			prints(": 1: exit: Invalid number: ", STDERR_FILENO);
+			prints(tokenize_commands[1], STDERR_FILENO);
+			prints("\n", STDERR_FILENO);
 			statue = 2;
 		}
 		else
@@ -58,5 +58,5 @@ void quit(char **tokenize_commands)
 		}
 	}
 	else
-		print("$: exit takes only one argument\n", STDERR_FILENO);
+		prints("$: exit takes only one argument\n", STDERR_FILENO);
 }

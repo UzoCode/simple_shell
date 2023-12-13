@@ -1,10 +1,5 @@
 #include "shell.h"
 
-	char **command = NULL;
-	char *lines = NULL;
-	char *shell_names = NULL;
-	int statue = 0;
-
 /**
  * main - main shell coded
  * @argc: number of passed arguments
@@ -16,19 +11,22 @@
  * Return: 0 on success
  */
 
-
 int main(int argc __attribute__((unused)), char **argv)
 {
+	int statue = 0;
+	char *shell_names = NULL;
+	char *lines = NULL;
+	char **command = NULL;
 	char **recent_command = NULL;
 	int i, types_commands = 0;
 	size_t n = 0;
 
-	signal(SIGINT, ctrl_c_handler);
+	signal(SIGINT, ctrl_c_handle);
 	shell_names = argv[0];
 	while (1)
 	{
 		non_interacting();
-		print(" ($) ", STDOUT_FILENO);
+		prints(" ($) ", STDOUT_FILENO);
 		if (getline(&lines, &n, stdin) == -1)
 		{
 			free(lines);
@@ -36,11 +34,11 @@ int main(int argc __attribute__((unused)), char **argv)
 		}
 			removes_newlines(lines);
 			removes_comments(lines);
-			command = tokenizer(lines, ";");
+			command = tokenize(lines, ";");
 
 		for (i = 0; command[i] != NULL; i++)
 		{
-			recent_command = tokenizer(command[i], " ");
+			recent_command = tokenize(command[i], " ");
 			if (recent_command[0] == NULL)
 			{
 				free(recent_command);
@@ -49,7 +47,7 @@ int main(int argc __attribute__((unused)), char **argv)
 			types_commands = parse_commands(recent_command[0]);
 
 			/* initializers -   */
-			initializer(recent_command, types_commands);
+			initialize(recent_command, types_commands);
 			free(recent_command);
 		}
 		free(command);

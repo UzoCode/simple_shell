@@ -16,8 +16,8 @@ void non_interacting(void)
 	{
 		while (getline(&lines, &n, stdin) != -1)
 		{
-			remove_newlines(lines);
-			remove_comments(lines);
+			removes_newlines(lines);
+			removes_comments(lines);
 			command = tokenize(lines, ";");
 			for (i = 0; command[i] != NULL; i++)
 			{

@@ -113,7 +113,7 @@ void *_reallocs(void *ptrs, unsigned int old_sizes, unsigned int new_sizes)
 void ctrl_c_handl(int signums)
 {
 	if (signums == SIGINT)
-		print("\n($) ", STDIN_FILENO);
+		prints("\n($) ", STDIN_FILENO);
 }
 
 /**

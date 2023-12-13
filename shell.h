@@ -30,13 +30,13 @@
 
 typedef struct map
 {
-	char *command_name;
+	char *command_names;
 	void (*func)(char **command);
 } function_map;
 
 extern char **environs;
 extern char *lines;
-extern char **commands;
+extern char **command;
 extern char *shell_names;
 extern int statue;
 
@@ -64,7 +64,7 @@ void removes_comments(char *);
 /*tools*/
 int parse_commands(char *);
 void execute_commands(char **, int);
-char *checks_paths(char *);
+char *checks_path(char *);
 void (*get_funcs(char *))(char **);
 char *_getenvs(char *);
 
