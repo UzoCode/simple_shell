@@ -61,7 +61,7 @@ void execute_commands(char **tokenize_commands, int commands_types)
 	{
 		if (execve(tokenize_commands[0], tokenize_commands, NULL) == -1)
 		{
-			perror(_getenv("PWD"));
+			perror(_getenvs("PWD"));
 			exit(2);
 		}
 	}
@@ -69,13 +69,13 @@ void execute_commands(char **tokenize_commands, int commands_types)
 	{
 		if (execve(checks_paths(tokenize_commands[0]), tokenize_commands, NULL) == -1)
 		{
-			perror(_getenv("PWD"));
+			perror(_getenvs("PWD"));
 			exit(2);
 		}
 	}
 	if (commands_types == INTERNAL_COMMAND)
 	{
-		func = get_func(tokenize_commands[0]);
+		func = get_funcs(tokenize_commands[0]);
 		func(tokenize_commands);
 	}
 	if (commands_types == INVALID_COMMAND)
@@ -98,12 +98,12 @@ char *checks_paths(char *commands)
 {
 	char **path_arrays = NULL;
 	char *temps, *temps2, *paths_cpy;
-	char *paths = _getenv("PATH");
+	char *paths = _getenvs("PATH");
 	int i;
 
-	if (paths == NULL || _strlen(paths) == 0)
+	if (paths == NULL || _strlens(paths) == 0)
 		return (NULL);
-	paths_cpy = malloc(sizeof(*paths_cpy) * (_strlen(paths) + 1));
+	paths_cpy = malloc(sizeof(*paths_cpy) * (_strlens(paths) + 1));
 	_strcpy(paths, paths_cpy);
 	path_arrays = tokenizer(paths_cpy, ":");
 	for (i = 0; path_arrays[i] != NULL; i++)
@@ -140,7 +140,7 @@ void (*get_funcs(char *commands))(char **)
 
 	for (i = 0; i < 2; i++)
 	{
-		if (_strcmp(commands, mappings[i].command_names) == 0)
+		if (_strcmps(commands, mappings[i].command_names) == 0)
 			return (mappings[i].funcs);
 	}
 	return (NULL);
