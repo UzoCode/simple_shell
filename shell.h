@@ -7,4 +7,7 @@
 #include <string.h>
 #include <fcntl.h>
 
+int fork(void);
+int main(void);
+int assist(int argc, char *argv[]);
 #endif
