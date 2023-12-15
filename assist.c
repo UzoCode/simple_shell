@@ -1,45 +1,46 @@
 #include "shell.h"
 
 /**
- *main - example of fork
- *
- *Return: Always 0.
+ * main - Entry point of the program
+ * @argc: argument number
+ * @argv: argument vector
+ * Return: 0 success, 1 if fail
  */
-int main(void)
+int main(int argc, char *argv[])
 {
-	pid_t call_pid;
-	pid_t childs_pid;
-	pid_t parents_pid;
-	pid_t pid;
+	const char *pathname = argv[1];
+	const char *paths = getenv("PATH");
+	char *path_cpy, *token;
+	char real_paths[1024];
 
-	pid = fork();
-
-	if (pid == -1)
+	if ((argc != 2) || (paths == NULL))
 	{
 		perror("Error:");
 		return (1);
 	}
 
-	if (pid == 0)
+	path_cpy = strdup(paths);
+	if (!path_cpy)
 	{
-		printf("After fork\n");
-
-		childs_pid = getpid();
-		call_pid = getppid();
-
-		printf("childs pid is %u\n", childs_pid);
-		printf("process pid is %u\n", call_pid);
-	}
-	else
-	{
-		printf("before fork\n");
-
-		call_pid = getpid();
-		parents_pid = getppid();
-
-		printf("process is %u\n", call_pid);
-		printf("bash pid(parents) is %u\n", parents_pid);
+		perror("Error:");
+		return (1);
 	}
 
-	return (0);
+	token = strtok(path_cpy, ":");
+	while (token)
+	{
+		/* concatenate token found in PATH with the file passed*/
+		snprintf(real_paths, sizeof(real_paths), "%s/%s", token, pathname);
+
+		if (access(real_paths, F_OK) == 0)
+		{
+			printf("%s\n", real_paths);
+			free(path_cpy);
+			return (0);
+		}
+		token = strtok(NULL, ":");
+	}
+
+	free(path_cpy);
+	return (1);
 }

@@ -6,8 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
-int fork(void);
-int main(void);
-int assist(int argc, char *argv[]);
+
+int process(void);
+int processtwo(void);
+int main(int argc, char *argv[]);
+char *_getenv(const char *name);
+int path_direct(void);
+PATH *buildpath_list(void);
+
 #endif
