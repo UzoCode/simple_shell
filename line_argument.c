@@ -1,94 +1,104 @@
 #include "shell.h"
 
-void prompts();
-char **split_strings(char *str, const char *delim);
-void freestr_array(char **str_ptr);
+static char read_buffer[BUFFER_SIZE];
+static ssize_t buffer_index;
 
 /**
- * main - point of entry
- * Return: 0 success, 1 failure
+ * resize_getline_bufs - resize the memory size of the buffer
+ * @lineptr: buffer
+ * @n: The buffer size allocated to the line
+ * @new_size: new size of memory
+ *
+ * Return: 0 on success, -ENOMEM on failure
  */
-int main(void)
+int resize_getline_bufs(char **lineptr, size_t *n, size_t new_size)
 {
-	char *lines = NULL;
-	size_t lens = 0;
-	ssize_t reads;
-	char **argv = NULL;
+	char *newline = _realloc(*lineptr, new_size);
 
-	prompts();
-	while ((reads = getline(&lines, &lens, stdin)) != -1)
+	if (newline == NULL)
 	{
-		/*Print command entered*/
-		printf("%s", lines);
-
-		argv = split_strings(lines, " ");
-
-		/*Print the next prompt*/
-		prompts();
+		free(*lineptr);
+		return (-ENOMEM);
 	}
-	free(lines);
-	freestr_array(argv);
+	*lineptr = newline;
+	*n = new_size;
+
 	return (0);
 }
 
 /**
- * prompts - displays prompt
- * Return: None
+ * _getlines - retrieves a line from stream
+ * @lineptr: The line is stored in the memory pointed to by the lineptr
+ * @n: The buffer size allocated to the line
+ * @stream: The file stream the line is gotten from
+ *
+ * Return: The amount of bytes read is returned on success,
+ * on error or EOF -1 is returned
  */
-void prompts()
+ssize_t _getlines(char **lineptr, size_t *n, FILE *stream)
 {
-	printf("$ ");
-	fflush(stdout);  /*displays prompt immediately*/
+	if (n == NULL || stream == NULL)
+		return (-EINVAL);
+
+	if (*lineptr == NULL || *n <= 0)
+	{
+		*n = BUFFER_SIZE;
+		*lineptr = malloc(*n);
+		if (*lineptr == NULL)
+			return (-ENOMEM);
+
+		_memsets(*lineptr, 0, BUFFER_SIZE);
+	}
+
+	return (readline(lineptr, n, stream->_fileno));
 }
 
 /**
- * split_strings - splits a string by the space delimiter
- * @str: string to split
- * @delim: character to split
+ * readlines - reads a line from a stream and stores it into lineptr
+ * @lineptr: pointer to where the read line will be stored
+ * @n: size of allocated buffer
+ * @fd: file descriptor for stream to read from
  *
- * Return: array of each word of the string
+ * Return: total amount bytes read on Success
  */
-char **split_strings(char *str, const char *delim)
+ssize_t readlines(char **lineptr, size_t *n, int fd)
 {
-	char *token = NULL;
-	char **array_tokens = malloc(sizeof(char *) * 1024);
-	size_t u = 0, j = 0;
+	ssize_t read_bytes = 0;
+	ssize_t total_bytes_read = 0;
 
-	token = strtok(str, delim);
-	while (token != NULL)
+	buffer_index = 0;
+
+	while (1)
 	{
-		array_tokens[u] = strdup(token);
-
-		if (array_tokens[u] == NULL)
+		/*Check if buffer needs to be resized*/
+		if (total_bytes_read >= (ssize_t)(*n - 1) &&
+		    resize_getline_bufs(lineptr, n, (*n * 2)))
 		{
-			for (j = 0; j <= u; j++)
-			{
-				free(array_tokens[j]);
-			}
-			free(array_tokens);
-			return (NULL);
+			return (-1); /*Memory allocation Failed*/
 		}
 
+		/*If the buffer is empty fill it, and reset the index to 0*/
+		if (buffer_index >= read_bytes)
+		{
+			read_bytes = read(fd, read_buffer, BUFFER_SIZE);
+			if (read_bytes <= 0)
+				return ((total_bytes_read == 0) ? EOF : -1);
+		}
 
-		token = strtok(NULL, delim);
-		u++;
+		if (read_buffer[buffer_index] == '\n')
+		{
+			/**
+			 * Set Null Terminating character immediately
+			 * after the last character
+			 */
+			(*lineptr)[total_bytes_read + 1] = '\0';
+
+			/*Reset Buffer*/
+			buffer_index = 0;
+			_memsets(read_buffer, 0, BUFFER_SIZE);
+			return (total_bytes_read + 1);
+		}
+
+		(*lineptr)[total_bytes_read++] = read_buffer[buffer_index++];
 	}
-
-	return (array_tokens);
-}
-
-/**
- * freestr_array - free array of strings
- * @str_ptr: pointer to strings
- */
-void freestr_array(char **str_ptr)
-{
-	size_t u = 0;
-
-	while (str_ptr[u] != NULL)
-	{
-		free(str_ptr[u]);
-		u++;
-	}
-	free(str_ptr);
 }
