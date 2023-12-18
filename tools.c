@@ -14,12 +14,11 @@ size_t _strlen(const char *str)
 	{
 		lengths++;
 	}
-
 	return (lengths);
 }
 
 /**
- * _strchr - search for first occurrence of a character in a string
+ * _strchr - searches first occurrence of character in a string
  * @strs: strings
  * @characters: the ascii character
  *
@@ -35,7 +34,6 @@ char *_strchr(const char *strs, int characters)
 		}
 		strs++;
 	}
-
 	return (NULL);
 }
 

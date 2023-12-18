@@ -58,7 +58,7 @@ int execute_commands(char **argv)
  */
 char *handle_paths(char *cmd)
 {
-	char *path = _getenv("PATH");
+	char *path = _getenvs("PATH");
 	char *path_copy;
 	char *token;
 	char *full_path;
@@ -77,7 +77,7 @@ char *handle_paths(char *cmd)
 	while (token)
 	{
 		/*concatenate the token in PATH with the command passed*/
-		full_path = _strcat(full_path, token, cmd, '/');
+		full_path = _strcats(full_path, token, cmd, '/');
 
 		if (access(full_path, X_OK) == 0)
 		{

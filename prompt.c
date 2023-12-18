@@ -54,7 +54,7 @@ int resizes_argv(char ***argv, size_t *max_argc)
 	*max_argc *= 2;
 
 	new_size = *max_argc * sizeof(char *);
-	new_argv = _realloc(*argv, new_size);
+	new_argv = _reallocs(*argv, new_size);
 	if (new_argv == NULL)
 		return (-ENOMEM);
 
@@ -64,7 +64,7 @@ int resizes_argv(char ***argv, size_t *max_argc)
 		new_argv[u] = (*argv)[u];
 	}
 
-	free_argv(*argv);
+	frees_argv(*argv);
 	*argv = new_argv;
 
 	return (0);

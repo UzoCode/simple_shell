@@ -13,7 +13,7 @@ static ssize_t buffer_index;
  */
 int resize_getline_bufs(char **lineptr, size_t *n, size_t new_size)
 {
-	char *newline = _realloc(*lineptr, new_size);
+	char *newline = _reallocs(*lineptr, new_size);
 
 	if (newline == NULL)
 	{
@@ -50,7 +50,7 @@ ssize_t _getlines(char **lineptr, size_t *n, FILE *stream)
 		_memsets(*lineptr, 0, BUFFER_SIZE);
 	}
 
-	return (readline(lineptr, n, stream->_fileno));
+	return (readlines(lineptr, n, stream->_fileno));
 }
 
 /**

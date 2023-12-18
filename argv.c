@@ -93,7 +93,7 @@ int gets_argv(char ***argv)
 
 	*argv = initializes_argv();
 	if (*argv == NULL)
-		free_argv(*argv), exit(-ENOMEM);
+		frees_argv(*argv), exit(-ENOMEM);
 
 	do {
 		/*prompt(1);*/
@@ -101,13 +101,13 @@ int gets_argv(char ***argv)
 
 		/* Ctrl+D pressed or end of input */
 		if (read_len == -1)
-			free(input_line), free_argv(*argv), exit(0);
+			free(input_line), frees_argv(*argv), exit(0);
 
 		if (input_line[read_len - 1] == '\n')
 			input_line[read_len - 1] = '\0';
 
 		delim = (_strchr(input_line, ';') != NULL) ? ";" : " ";
-		line_argc = process_line(input_line, argv, delim);
+		line_argc = process_lines(input_line, argv, delim);
 
 		if (line_argc == -1)
 		{

@@ -10,9 +10,9 @@ int changes_working_dir(char **argv)
 {
 	char *path, old_dir[PATH_MAX], new_dir[PATH_MAX];
 
-	if (argv[1] == NULL || _strcmp(argv[1], "~") == 0)
+	if (argv[1] == NULL || _strcmps(argv[1], "~") == 0)
 		path = _getenvs("HOME");
-	else if (_strcmp(argv[1], "-") == 0)
+	else if (_strcmps(argv[1], "-") == 0)
 		path = _getenvs("OLDPWD");
 	else
 		path = argv[1];
@@ -79,14 +79,14 @@ int exit_simple_shells(char **argv)
 
 	if (!exit_code)
 	{
-		free_argv(argv);
+		frees_argv(argv);
 		exit(0);
 	}
 	else
 	{
 		int code = atoi(exit_code);
 
-		free_argv(argv);
+		frees_argv(argv);
 		exit(code);
 	}
 	return (0);
@@ -103,18 +103,18 @@ int modifyenv(char **argv)
 	char *command = argv[0];
 	int result;
 
-	if (_strcmp(command, "setenv") == 0 &&
+	if (_strcmps(command, "setenv") == 0 &&
 	    (argv[1] != NULL) && (argv[2] != NULL))
 	{
 		char *name = argv[1];
 		char *value = argv[2];
 
-		result = _setenv(name, value, 1);
+		result = _setenvs(name, value, 1);
 
 		return (result);
 	}
 
-	if (_strcmp(command, "unsetenv") == 0 && (argv[1] != NULL))
+	if (_strcmps(command, "unsetenv") == 0 && (argv[1] != NULL))
 	{
 		char *name = argv[1];
 

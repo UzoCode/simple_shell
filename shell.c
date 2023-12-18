@@ -14,35 +14,6 @@ void handle_signals(int sigint)
 }
 
 /**
- * main - the entry point
- * @argc: argument count
- * @argv: argument vector
- *
- * Return: 0 success
- */
-int main(int argc, char **argv)
-{
-	signal(SIGINT, handle_signals);
-
-	if (argc > 1)
-	{
-		exit(execute_commands_from_files(argv));
-	}
-
-	while (prompts(0))
-	{
-		argc = get_argv(&argv);
-		if (argc > 0)
-		{
-			argv[argc] = NULL;
-			run_commands(argv);
-			free_argv(argv);
-		}
-	}
-	return (0);
-}
-
-/**
  * exit_with_errors - writes message to stderr exits with error code
  * @code: error code
  * @shell: shell program
@@ -119,11 +90,40 @@ int run_commands(char **argv)
 	get_builtin execute_builtin;
 	int run_statuss;
 
-	execute_builtin = handle_builtin_func(argv[0]);
+	execute_builtin = handles_builtin_func(argv[0]);
 	if (execute_builtin)
 		run_statuss = execute_builtin(argv);
 	else
-		run_statuss = execute_command(argv);
+		run_statuss = execute_commands(argv);
 
 	return (run_statuss);
 }
+
+/**
+  * main - the entry point
+  * @argc: argument count
+  * @argv: argument vector
+  *
+  * Return: 0 success
+  */
+ int main(int argc, char **argv)
+ {
+         signal(SIGINT, handle_signals);
+
+         if (argc > 1)
+         {
+                 exit(execute_commands_from_files(argv));
+         }
+
+         while (prompts(0))
+         {
+                 argc = gets_argv(&argv);
+                 if (argc > 0)
+                 {
+                         argv[argc] = NULL;
+                         run_commands(argv);
+                         frees_argv(argv);
+                 }
+         }
+         return (0);
+ }
